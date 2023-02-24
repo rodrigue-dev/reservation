@@ -28,7 +28,7 @@ Route::get('/storage', function () {
 });
 
 //UI Pages Routs
-Route::get('/', [HomeController::class, 'uisheet'])->name('uisheet');
+Route::get('/uisheet', [HomeController::class, 'uisheet'])->name('uisheet');
 
 Route::group(['middleware' => 'auth'], function () {
     // Permission Module
@@ -37,8 +37,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('role', RoleController::class);
 
     // Dashboard Routes
-    Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
-
+    Route::get('/', [HomeController::class, 'index'])->name('dashboard');
+    Route::get('/myreservation', [HomeController::class, 'myreservation'])->name('myreservation');
+    Route::get('/listreservation', [HomeController::class, 'listreservation'])->name('listreservation');
+    Route::get('/waitreservation', [HomeController::class, 'waitreservation'])->name('waitreservation');
     // Users Module
     Route::resource('users', UserController::class);
 });

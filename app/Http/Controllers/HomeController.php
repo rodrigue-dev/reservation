@@ -11,37 +11,8 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        $assets = ['chart', 'animation'];
+        $assets = ['chart', 'animation','calender'];
         return view('dashboards.dashboard', compact('assets'));
-    }
-
-    /*
-     * Menu Style Routs
-     */
-    public function horizontal(Request $request)
-    {
-        $assets = ['chart', 'animation'];
-        return view('menu-style.horizontal',compact('assets'));
-    }
-    public function dualhorizontal(Request $request)
-    {
-        $assets = ['chart', 'animation'];
-        return view('menu-style.dual-horizontal',compact('assets'));
-    }
-    public function dualcompact(Request $request)
-    {
-        $assets = ['chart', 'animation'];
-        return view('menu-style.dual-compact',compact('assets'));
-    }
-    public function boxed(Request $request)
-    {
-        $assets = ['chart', 'animation'];
-        return view('menu-style.boxed',compact('assets'));
-    }
-    public function boxedfancy(Request $request)
-    {
-        $assets = ['chart', 'animation'];
-        return view('menu-style.boxed-fancy',compact('assets'));
     }
 
     /*
@@ -78,35 +49,6 @@ class HomeController extends Controller
         return view('special-pages.timeline');
     }
 
-
-    /*
-     * Widget Routs
-     */
-    public function widgetbasic(Request $request)
-    {
-        return view('widget.widget-basic');
-    }
-    public function widgetchart(Request $request)
-    {
-        $assets = ['chart'];
-        return view('widget.widget-chart', compact('assets'));
-    }
-    public function widgetcard(Request $request)
-    {
-        return view('widget.widget-card');
-    }
-
-    /*
-     * Maps Routs
-     */
-    public function google(Request $request)
-    {
-        return view('maps.google');
-    }
-    public function vector(Request $request)
-    {
-        return view('maps.vector');
-    }
 
     /*
      * Auth Routs
@@ -157,11 +99,18 @@ class HomeController extends Controller
     /*
      * uisheet Page Routs
      */
-    public function uisheet(Request $request)
+    public function myreservation(Request $request)
     {
-        return view('uisheet');
+        return view('my.reservation');
     }
-
+    public function waitreservation(Request $request)
+    {
+        return view('manager.waitreservation');
+    }
+    public function listreservation(Request $request)
+    {
+        return view('manager.listreservation');
+    }
     /*
      * Form Page Routs
      */

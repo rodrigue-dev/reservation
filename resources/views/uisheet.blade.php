@@ -1,6 +1,6 @@
 <x-app-layout layout="simple" :assets="$assets ?? []">
 <span class="uisheet screen-darken"></span>
-    <div class="header" style="background: url({{asset('images/dashboard/top-image.jpg')}}); background-size: cover; background-repeat: no-repeat; height: 100vh;position: relative;">
+{{--    <div class="header" style="background: url({{asset('images/dashboard/top-image.jpg')}}); background-size: cover; background-repeat: no-repeat; height: 100vh;position: relative;">
         <div class="main-img">
             <div class="container">
                 <svg width="150" viewBox="0 0 55 55" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -115,7 +115,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                            </i>  
+                            </i>
                           Forms
                         </button>
                         <ul class="list-unstyled ps-3 collapse" id="forms-collapse" href="#forms" style="">
@@ -136,7 +136,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                            </i>  
+                            </i>
                           Contents
                         </button>
                         <ul class="list-unstyled ps-3 collapse" id="contents-collapse" href="#content" style="">
@@ -6080,5 +6080,5 @@
                 </svg>
             </i>
         </button>
-    </div>
+    </div>--}}
 </x-app-layout>

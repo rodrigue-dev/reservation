@@ -17,14 +17,20 @@ class RoleTableSeeder extends Seeder
     {
         $roles = [
             [
-                'name' => 'admin',
-                'title' => 'Admin',
+                'name' => 'super_admin',
+                'title' => 'Super Admin',
                 'status' => 1,
                 'permissions' => ['role','role-add', 'role-list', 'permission', 'permission-add', 'permission-list']
             ],
             [
-                'name' => 'demo_admin',
-                'title' => 'Demo Admin',
+                'name' => 'admin',
+                'title' => 'Admin',
+                'status' => 1,
+                'permissions' => []
+            ],
+            [
+                'name' => 'manager',
+                'title' => 'Manager',
                 'status' => 1,
                 'permissions' => []
             ],

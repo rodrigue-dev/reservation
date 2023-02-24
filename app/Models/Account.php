@@ -4,15 +4,16 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Permission\Traits\HasRoles;
 
-
-class User extends Account
+class Account extends Authenticatable implements MustVerifyEmail, HasMedia
 {
+    use HasFactory, Notifiable, HasRoles, InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -56,7 +57,10 @@ class User extends Account
         return $this->first_name . ' ' . $this->last_name;
     }
 
-    public function getAccount() {
-        return $this->belongsTo(Account::class, null, 'id');
+    public function getPersonnel() {
+        return $this->hasOne(Personnel::class, 'account_id', 'id');
+    }
+    public function getUser() {
+        return $this->hasOne(User::class, 'account_id', 'id');
     }
 }
