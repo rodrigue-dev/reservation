@@ -13,7 +13,7 @@ class Personnel extends Account
         'account_id',
         'address',
         ];
-    public function getAccount() {
-        return $this->belongsTo(Account::class, null, 'id');
+    public function account() {
+        return $this->belongsTo(Account::class, 'account_id', 'id');
     }
 }

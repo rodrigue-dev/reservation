@@ -16,7 +16,6 @@ class CreateTablePersonnel extends Migration
         Schema::create('personnels', function (Blueprint $table) {
             $table->id();
             $table->string('address');
-            //$table->integer('account_id')->unsigned()->index();
             $table->foreignId("account_id");
             $table->timestamps();
         });

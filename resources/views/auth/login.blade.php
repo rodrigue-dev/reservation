@@ -54,16 +54,7 @@
                            <div class="d-flex justify-content-center">
                               <ul class="list-group list-group-horizontal list-group-flush">
                                  <li class="list-group-item border-0 pb-0">
-                                    <a href="#"><img src="{{asset('images/brands/fb.svg')}}" alt="fb"></a>
-                                 </li>
-                                 <li class="list-group-item border-0 pb-0">
                                     <a href="#"><img src="{{asset('images/brands/gm.svg')}}" alt="gm"></a>
-                                 </li>
-                                 <li class="list-group-item border-0 pb-0">
-                                    <a href="#"><img src="{{asset('images/brands/im.svg')}}" alt="im"></a>
-                                 </li>
-                                 <li class="list-group-item border-0 pb-0">
-                                    <a href="#"><img src="{{asset('images/brands/li.svg')}}" alt="li"></a>
                                  </li>
                               </ul>
                            </div>
