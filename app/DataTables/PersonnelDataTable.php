@@ -2,7 +2,8 @@
 
 namespace App\DataTables;
 
-use App\Models\Personnel;
+use App\Models\Gestionnaire;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Services\DataTable;
@@ -27,14 +28,13 @@ class PersonnelDataTable extends DataTable
     /**
      * Get query source of dataTable.
      *
-     * @param Personnel $model
+     * @param Gestionnaire $model
      * @return Builder
      */
-    public function query(Personnel $model)
+    public function query(User $model)
     {
-        /*        $model = Personnel::query()->with('account');
-                return $this->applyScopes($model);*/
-        return $model->newQuery()->with(['account']);
+        return $model->newQuery()->where('user_type','=','admin')
+            ->orWhere('user_type','=','super_admin');
     }
 
     /**
@@ -69,10 +69,10 @@ class PersonnelDataTable extends DataTable
         return [
             ['data' => 'id', 'name' => 'id', 'title' => 'ID'],
 
-            ['data' => 'account.email', 'name' => 'email', 'title' => 'Email'],
-            ['data' => 'account.first_name', 'name' => 'First name', 'title' => 'First name'],
-            ['data' => 'account.last_name', 'name' => 'Last name', 'title' => 'Last name'],
-            ['data' => 'account.phone_number', 'name' => 'Phone', 'title' => 'Phone'],
+            ['data' => 'email', 'name' => 'email', 'title' => 'Email'],
+            ['data' => 'first_name', 'name' => 'First name', 'title' => 'First name'],
+            ['data' => 'last_name', 'name' => 'Last name', 'title' => 'Last name'],
+            ['data' => 'phone_number', 'name' => 'Phone', 'title' => 'Phone'],
             ['data' => 'created_at', 'name' => 'Date creation', 'title' => 'Date creation'],
 
         ];

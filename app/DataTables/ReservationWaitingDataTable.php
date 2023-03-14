@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\GroupLocal;
 use App\Models\Reservation;
 use App\Models\ReservationWaiting;
+use App\Models\User;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Html\Editor\Editor;
@@ -52,7 +53,7 @@ class ReservationWaitingDataTable extends DataTable
             return $typesalle->type;
         })
         ->editColumn('user.account', function($query) {
-            $account=Account::query()->firstWhere('id','=',$query->user->account_id);
+            $account=User::query()->find($query->user_id);
             return $account->first_name.' '.$account->last_name;
         })
         ->addColumn('action', function ($query){

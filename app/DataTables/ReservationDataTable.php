@@ -5,6 +5,8 @@ namespace App\DataTables;
 use App\Models\Account;
 use App\Models\GroupLocal;
 use App\Models\Reservation;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
@@ -27,13 +29,13 @@ class ReservationDataTable extends DataTable
             ->editColumn('status', function ($query) {
                 $status = 'PENDING';
                 switch ($query->status) {
-                    case 'ACCEPTED':
+                    case Reservation::ACCEPTED:
                         $status = 'primary';
                         break;
-                    case 'REFUSED':
+                    case Reservation::DENIED:
                         $status = 'danger';
                         break;
-                    case 'PENDING':
+                    case Reservation::PENDING:
                         $status = 'dark';
                         break;
                 }
@@ -50,13 +52,13 @@ class ReservationDataTable extends DataTable
                 return $typesalle->type;
             })
             ->editColumn('user.account', function ($query) {
-                $account = Account::query()->firstWhere('id', '=', $query->user->account_id);
+                $account = User::query()->find($query->user_id);
                 return $account->first_name . ' ' . $account->last_name;
             })
             ->addColumn('action', function ($query) {
                 if ($query->status == 'PENDING') {
                     return '<div class="btn-group-sm"><a class="btn btn-sm btn-success" href="' . route('activatereservation', ['id' => $query->id, 'status' => 'ACCEPTED']) . '">Valider</a>
-                 <a class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#refused-reservation">Refuser</a></div>';
+                 <a class="btn btn-sm btn-danger" onclick=getId("'.$query->id.'") data-bs-toggle="modal" data-bs-target="#refused-reservation">Refuser</a></div>';
                 } else {
                     return '';
                 }
@@ -68,8 +70,8 @@ class ReservationDataTable extends DataTable
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\Reservation $model
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param Reservation $model
+     * @return Builder
      */
     public function query(Reservation $model)
     {

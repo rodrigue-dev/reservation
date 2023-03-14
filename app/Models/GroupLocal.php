@@ -11,6 +11,8 @@ class GroupLocal extends Model
     protected $table="group_local";
     protected $fillable = [
         'libelle',
+        'type_jour_id',
+        'type_salle_id'
     ];
 
     public function locals() {

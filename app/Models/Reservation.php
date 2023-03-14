@@ -28,13 +28,13 @@ class Reservation extends Model
         return $this->belongsTo(Local::class, 'local_id', 'id');
     }
     public function local_group() {
-        return $this->belongsTo(Local::class, 'group_local_id', 'id');
+        return $this->belongsTo(GroupLocal::class, 'group_local_id', 'id');
     }
     public function periode() {
         return $this->belongsTo(Periode::class, 'periode_id', 'id');
     }
     public function agenda() {
-        return $this->belongsTo(Agenda::class, 'agenda_id', 'id');
+        return $this->belongsToMany(CaseAgenda::class,'reservation_case_agenda');
     }
     public function user() {
         return $this->belongsTo(User::class, 'user_id', 'id');

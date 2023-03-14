@@ -54,7 +54,7 @@
     var configs={
         routes:{
             myreservation: "{{\Illuminate\Support\Facades\URL::to('myreservation')}}",
-            startreservation: "{{\Illuminate\Support\Facades\URL::to('reservation/start')}}",
+            startreservation: "{{\Illuminate\Support\Facades\URL::to('reservation/addhome')}}",
             reservation_getsalle: "{{\Illuminate\Support\Facades\URL::route('ajaxgetsalle')}}",
             ajaxpostreservation: "{{\Illuminate\Support\Facades\URL::route('ajaxpostreservation')}}",
             calendarevent: "{{\Illuminate\Support\Facades\URL::to('calendarevent')}}",

@@ -1,5 +1,10 @@
 @push('scripts')
     {{ $dataTable->scripts() }}
+    <script>
+        function getId(id) {
+            $('#reservation_id').val(id)
+        }
+    </script>
 @endpush
 <x-app-layout :assets="$assets ?? []">
 <div>
@@ -31,20 +36,24 @@
                 <h5 class="modal-title" id="formTitle">Laisser un commentaire</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div class="main_form">
-                    <div class="col-md-12">
-                        <label class="form-label" for="r_time">Message</label>
-                        <textarea type="time" class="form-control"  id="r_time">
+            {!! Form::open(['route' => ['annulerreservation'], 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
+
+                <div class="modal-body">
+                    <div class="main_form">
+                        <input id="reservation_id" type="hidden" name="reservation_id">
+                        <div class="col-md-12">
+                            <label class="form-label" for="r_time">Message</label>
+                            <textarea type="text" name="message" class="form-control"  id="r_time">
                         </textarea>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-success" id="btn-continue">
-                    Annuler la reservation
-                </button>
-            </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success" id="btn-denier">
+                        Annuler la reservation
+                    </button>
+                </div>
+            {!! Form::close() !!}
         </div>
     </div>
 </div>

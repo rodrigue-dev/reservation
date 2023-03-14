@@ -1,7 +1,9 @@
 <?php
 
 // Controllers
+use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\GestionnaireController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\Security\PermissionController;
@@ -10,7 +12,7 @@ use App\Http\Controllers\Security\RolePermission;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
-
+use Laravel\Socialite\Facades\Socialite;
 // Packages
 
 /*
@@ -30,26 +32,37 @@ Route::get('/storage', function () {
     Artisan::call('storage:link');
 });
 
-//UI Pages Routs
-Route::get('/uisheet', [HomeController::class, 'uisheet'])->name('uisheet');
 
+//UI Pages Routs
+Route::get('/', [HomeController::class, 'index'])->name('index');
+Route::get('/calendarevent', [HomeController::class, 'calendarevent'])->name('calendarevent');
+
+//Icons Page Routs
+Route::group(['prefix' => 'icons'], function() {
+    Route::get('solid', [HomeController::class, 'solid'])->name('icons.solid');
+    Route::get('outline', [HomeController::class, 'outline'])->name('icons.outline');
+    Route::get('dualtone', [HomeController::class, 'dualtone'])->name('icons.dualtone');
+    Route::get('colored', [HomeController::class, 'colored'])->name('icons.colored');
+});
 Route::group(['middleware' => 'auth'], function () {
     // Permission Module
     Route::get('/role-permission', [RolePermission::class, 'index'])->name('role.permission.list');
     Route::resource('permission', PermissionController::class);
     Route::resource('role', RoleController::class);
-
     // Dashboard Routes
-    Route::get('/', [HomeController::class, 'index'])->name('dashboard');
-    Route::get('/calendarevent', [HomeController::class, 'calendarevent'])->name('calendarevent');
-    Route::get('/myreservation', [HomeController::class, 'myreservation'])->name('myreservation');
+    Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
+   Route::get('/myreservation', [HomeController::class, 'myreservation'])->name('myreservation');
     Route::get('/listreservation', [HomeController::class, 'listreservation'])->name('listreservation');
     Route::get('/waitreservation', [HomeController::class, 'waitreservation'])->name('waitreservation');
-    Route::get('reservation/{id}/denier', [HomeController::class, 'annulerreservation'])->name('annulerreservation');
+    Route::post('reservation/denier', [HomeController::class, 'annulerreservation'])->name('annulerreservation');
     Route::get('reservation/{id}/activate', [HomeController::class, 'activatereservation'])->name('activatereservation');
     Route::get('reservation/{id}/delete', [HomeController::class, 'deletereservation'])->name('deletereservation');
     // Users Module
     Route::resource('users', UserController::class);
+
+    Route::resource('gestionnaires', GestionnaireController::class);
+    Route::post('gestionnaires/store', [GestionnaireController::class, 'store'])->name('gestionnaires.store');
+
     Route::resource('personnels', PersonnelController::class);
     Route::post('personnels/store', [PersonnelController::class, 'store'])->name('personnels.store');
     Route::resource('config', ConfigController::class);
@@ -76,8 +89,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('config/storegrouplocal', [ConfigController::class, 'storegrouplocal'])->name('config.storegrouplocal');
     Route::post('config/storeperiode', [ConfigController::class, 'storeperiode'])->name('config.storeperiode');
 /// Reservation routes
-    Route::post('reservation/start', [HomeController::class, 'startreservation'])->name('startreservation');
+    Route::get('reservation/start', [HomeController::class, 'startreservation'])->name('startreservation');
     Route::get('reservation/add', [HomeController::class, 'addreservation'])->name('addreservation');
+    Route::get('reservation/addhome', [HomeController::class, 'addreservation_home'])->name('addreservation_home');
     Route::post('ajax/postreservation', [HomeController::class, 'ajaxpostreservation'])->name('ajaxpostreservation');
     Route::get('ajax/getsalle', [HomeController::class, 'ajaxgetsalle'])->name('ajaxgetsalle');
 });
@@ -89,4 +103,8 @@ Route::group(['prefix' => 'auth'], function() {
     Route::get('lockscreen', [HomeController::class, 'lockscreen'])->name('auth.lockscreen');
     Route::get('recoverpw', [HomeController::class, 'recoverpw'])->name('auth.recoverpw');
     Route::get('userprivacysetting', [HomeController::class, 'userprivacysetting'])->name('auth.userprivacysetting');
+// La redirection vers le provider
+    Route::get('redirect/{provider}', [SocialiteController::class, 'redirect'])->name('socialite.redirect');
+// Le callback du provider
+    Route::get('callback/{provider}', [SocialiteController::class, 'callback'])->name('socialite.callback');
 });

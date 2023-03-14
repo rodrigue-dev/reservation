@@ -23,8 +23,7 @@ class CreateTableReservation extends Migration
             $table->foreignId("user_id");
             $table->foreignId("local_id");
             $table->foreignId("group_local_id");
-            //$table->foreignId("agenda_id");
-            $table->foreignId("personnel_id")->nullable(true);
+            $table->foreignId("gestionnaire_id")->nullable(true);
             $table->foreignId("periode_id")->nullable(true);
             $table->timestamps();
         });

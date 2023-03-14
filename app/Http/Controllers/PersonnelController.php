@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\DataTables\PersonnelDataTable;
 use App\Helpers\AuthHelper;
 use App\Models\Account;
-use App\Models\Personnel;
+use App\Models\Gestionnaire;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -19,10 +21,13 @@ class PersonnelController extends Controller
      */
     public function index(PersonnelDataTable $dataTable)
     {
-        $pageTitle = "Liste du personnels";
+        /*if (! auth()->user()->hasRole("super_admin")||! auth()->user()->hasRole("admin")) {
+            return redirect(route('dashboard'))->withFlashDanger('You are not authorized to view admin dashboard.');
+        }*/
+        $pageTitle = "Liste des administrateurs";
         $auth_user = AuthHelper::authSession();
         $assets = ['data-table'];
-        $headerAction = '<a href="#" data-app-title="Ajouter un personnel" data-size="meduim" class="btn btn-sm btn-primary" role="button" data-bs-toggle="tooltip" data-modal-form="form" data-icon="person_add" data-size="small" data--href="'. route('personnels.create') .'"><i class="fa fa-plus"></i>Ajouter</a>';
+        $headerAction = '<a href="#" data-app-title="Ajouter un administrateur" data-size="meduim" class="btn btn-sm btn-primary" role="button" data-bs-toggle="tooltip" data-modal-form="form" data-icon="person_add" data-size="small" data--href="'. route('personnels.create') .'"><i class="fa fa-plus"></i>Ajouter</a>';
         return $dataTable->render('global.datatable', compact('pageTitle','auth_user','assets', 'headerAction'));
     }
 
@@ -42,12 +47,12 @@ class PersonnelController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return Response
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function store(Request $request)
     {
-        $account=new Account();
+        $account=new User();
         $account->first_name=$request->first_name;
         $account->last_name=$request->last_name;
         $account->email=$request->email;
@@ -56,7 +61,7 @@ class PersonnelController extends Controller
         $account->password="12345";
         $account->username=$request->email;
         $account->save();
-        $personnel=new Personnel();
+        $personnel=new Gestionnaire();
         $personnel->address=$request->address;
         $personnel->account()->associate($account);
          $b_ool=$personnel->save();

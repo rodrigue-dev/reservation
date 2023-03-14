@@ -28,6 +28,9 @@ class ConfigController extends Controller
      */
     public function indexlocal(LocalDataTable $dataTable)
     {
+       /* if (!auth()->user()->hasRole("admin")||!auth()->user()->hasRole("super_admin")) {
+            return redirect(route('dashboard'))->withErrors(['message'=>'You are not authorized to view admin local.']);
+        }*/
         $pageTitle = "Liste du locaux";
         $auth_user = AuthHelper::authSession();
         $assets = ['data-table'];
@@ -283,7 +286,7 @@ class ConfigController extends Controller
         $typeaccessoire = new TypeAccessoire();
         $typeaccessoire->libelle = $request->libelle;
         $typeaccessoire->quantite = $request->quantite;
-        $typeaccessoire->quantite_restante = $request->quantite;
+        //$typeaccessoire->quantite_restante = $request->quantite;
         $b_ool = $typeaccessoire->save();
         if ($b_ool) {
             return redirect()->route('config.indextypeaccessoire')->withSuccess(__('Save success', ['name' => __('users.store')]));

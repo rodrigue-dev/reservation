@@ -23,7 +23,7 @@
         </div>
         <div class="form-group col-md-6">
             <label class="form-label">Roles</label>
-            {{ Form::select('user_type', array('manager'=>'ROLE_MANAGER','admin'=>"ROLE_ADMIN",'super_admin'=>"ROLE_SUPERADMIN"),'ROLE_MANAGER', ['class' => 'form-select','id' => 'lastname', 'required']) }}
+            {{ Form::select('user_type', array('admin'=>"ROLE_ADMIN",'super_admin'=>"ROLE_SUPERADMIN"),'ROLE_MANAGER', ['class' => 'form-select','id' => 'lastname', 'required']) }}
         </div>
     </div>
 

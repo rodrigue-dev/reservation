@@ -17,7 +17,7 @@ class CreateTableCommentaire extends Migration
             $table->id();
             $table->string("message");
             $table->foreignId("reservation_id");
-            $table->foreignId("personnel_id");
+            $table->foreignId("gestionnaire_id");
             $table->timestamps();
         });
     }

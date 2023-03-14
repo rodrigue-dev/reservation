@@ -20,12 +20,6 @@ class UsersDataTable extends DataTable
     {
         return datatables()
             ->eloquent($query)
-            ->editColumn('userProfile.country', function($query) {
-                return $query->userProfile->country ?? '-';
-            })
-            ->editColumn('userProfile.company_name', function($query) {
-                return $query->userProfile->company_name ?? '-';
-            })
             ->editColumn('status', function($query) {
                 $status = 'warning';
                 switch ($query->status) {
@@ -48,16 +42,6 @@ class UsersDataTable extends DataTable
                 $sql = "CONCAT(users.first_name,' ',users.last_name)  like ?";
                 return $query->whereRaw($sql, ["%{$keyword}%"]);
             })
-            ->filterColumn('userProfile.company_name', function($query, $keyword) {
-                return $query->orWhereHas('userProfile', function($q) use($keyword) {
-                    $q->where('company_name', 'like', "%{$keyword}%");
-                });
-            })
-            ->filterColumn('userProfile.country', function($query, $keyword) {
-                return $query->orWhereHas('userProfile', function($q) use($keyword) {
-                    $q->where('country', 'like', "%{$keyword}%");
-                });
-            })
            // ->addColumn('action', 'users.action')
             ->rawColumns(['action','status']);
     }
@@ -70,7 +54,7 @@ class UsersDataTable extends DataTable
      */
     public function query()
     {
-        $model = User::query()->with(['userProfile','account']);
+        $model = User::query()->where('user_type','=','user');
         return $this->applyScopes($model);
     }
 
@@ -101,12 +85,10 @@ class UsersDataTable extends DataTable
     {
         return [
             ['data' => 'id', 'name' => 'id', 'title' => 'id'],
-            ['data' => 'account.full_name', 'name' => 'full_name', 'title' => 'FULL NAME', 'orderable' => false],
-            ['data' => 'account.phone_number', 'name' => 'phone_number', 'title' => 'Phone Number'],
-            ['data' => 'account.email', 'name' => 'email', 'title' => 'Email'],
-            ['data' => 'userProfile.country', 'name' => 'userProfile.country', 'title' => 'Country'],
+            ['data' => 'full_name', 'name' => 'full_name', 'title' => 'FULL NAME', 'orderable' => false],
+            ['data' => 'phone_number', 'name' => 'phone_number', 'title' => 'Phone Number'],
+            ['data' => 'email', 'name' => 'email', 'title' => 'Email'],
             ['data' => 'status', 'name' => 'status', 'title' => 'Status'],
-            ['data' => 'userProfile.company_name', 'name' => 'userProfile.company_name', 'title' => 'Company'],
             ['data' => 'created_at', 'name' => 'created_at', 'title' => 'Join Date'],
 /*            Column::computed('action')
                   ->exportable(false)

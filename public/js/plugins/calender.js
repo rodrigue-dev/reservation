@@ -28,12 +28,13 @@ if (document.querySelectorAll('#calendar1').length) {
         //  $('#date-event').modal('show')
           var SITE_URL="{{ url('/'}} ";
           console.log(info.dateStr)
-          $.ajaxSetup({
+          window.location=configs.routes.startreservation+"?date="+info.dateStr;
+/*          $.ajaxSetup({
               headers: {
                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
               }
           })
-        /*  $.ajax({
+          $.ajax({
               url:configs.routes.startreservation,
               data:{
                   date:info.date,

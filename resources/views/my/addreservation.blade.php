@@ -42,6 +42,33 @@
                 }
             })
         })
+        $('input[name=flexRadioDefault]:radio').change(function () {
+            $.ajax({
+                url: configs.routes.reservation_getsalle,
+                data: {
+                    periode: $('#periode').val(),
+                    typejour: $('#typejour').val(),
+                    horaire_reservation: $(this).val(),
+                    mode: 'gethoraire'
+                },
+                type: "GET",
+                success: function (data) {
+                    $('#r_time').html("")
+                    $('#r_time_end').html("")
+                    $.each(data.begins, function (index, item) {
+                        $('#r_time').append("<option>"+item+"</option>")
+
+                    })
+                    $.each(data.ends, function (index, item) {
+                        $('#r_time_end').append("<option>"+item+"</option>")
+
+                    })
+                },
+                error: function (error) {
+
+                }
+            })
+        })
         $('#typejour_').change(function () {
             $.ajax({
                 url: configs.routes.reservation_getsalle,
@@ -100,7 +127,7 @@
                 data: JSON.stringify({
                     ob: jsonObj, local: $('#locaux input[type=radio]:checked').val()
                     , periode: $('#periode option:selected').val(),end: $('#r_time_end').val(),
-                    date_reservation: $('#r_date').val(),start: $('#r_time_begin').val(),
+                    date_reservation: $('#r_date').val(),start: $('#r_time').val(),
                     group_local: $('#group_local').val()
                 }),
                 success: function (data) {
@@ -175,20 +202,21 @@
                             <div class="col-md-12 mt-2 mb-3">
                                 <div class="form-check col-md-4"><input class="form-check-input"  value="08h25-15h45" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
                                     <label class="form-check-label" for="flexRadioDefault1">08h25-15h45</label> </div>
-                                <div class="form-check col-md-4"><input class="form-check-input"  value="08h25-15h45" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                                <div class="form-check col-md-4"><input class="form-check-input"  value="16h00-22h30" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
                                     <label class="form-check-label" for="flexRadioDefault1">16h00-22h30</label> </div>
-                               {{-- <div id="reservation_horaire" class="row px-3">
-
-                                </div>--}}
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label" for="r_time">Heure de debut: </label>
-                                <input type="time" class="form-control" id="r_time_begin">
+                                <select class="form-select" id="r_time">
+                                </select>
+                                {{--<input type="time" class="form-control" id="r_time_begin">--}}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="r_time">Heure de fin: </label>
-                                <input type="time" class="form-control" id="r_time_end">
+                                <select class="form-select" id="r_time_end">
+                                </select>
+                               {{-- <input type="time" class="form-control" id="r_time_end">--}}
                             </div>
                         </div>
                         <div class="row px-3" id="step-2">

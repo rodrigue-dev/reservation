@@ -42,7 +42,7 @@ class ReservationUserDataTable extends DataTable
                 return '<span class="text-capitalize badge bg-' . $status . '">' . $query->status . '</span>';
             })
             ->editColumn('user.account', function ($query) {
-                $account = Account::query()->firstWhere('id', '=', $query->user->account_id);
+                $account = User::query()->firstWhere('id', '=', $query->user_id);
                 return $account->first_name . ' ' . $account->last_name;
             })
             ->editColumn('local_group.typejour', function ($query) {
@@ -74,7 +74,7 @@ class ReservationUserDataTable extends DataTable
      */
     public function query(Reservation $model)
     {
-        $user_id =User::query()->firstWhere('account_id','=',auth()->user()->id)->id ;
+        $user_id =auth()->user()->id ;
         return $model->newQuery()->where('user_id', '=', $user_id)
             ->with(['user', 'local'])->orderByDesc('id');
     }

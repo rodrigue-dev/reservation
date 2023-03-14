@@ -17,7 +17,6 @@ class CreateTableTypeAccessoire extends Migration
             $table->id();
             $table->string("libelle");
             $table->integer("quantite");
-            $table->integer("quantite_restante");
             $table->timestamps();
         });
     }

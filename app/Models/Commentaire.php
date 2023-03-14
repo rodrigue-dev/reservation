@@ -11,5 +11,7 @@ class Commentaire extends Model
     use HasFactory;
     protected $fillable = [
         'message',
+        'reservation_id',
+        'gestionnaire_id'
     ];
 }
