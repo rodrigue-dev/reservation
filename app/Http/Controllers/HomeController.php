@@ -6,18 +6,18 @@ use App\DataTables\ReservationDataTable;
 use App\DataTables\ReservationUserDataTable;
 use App\DataTables\ReservationWaitingDataTable;
 use App\Helpers\AuthHelper;
+use App\Helpers\DateTimeHelper;
 use App\Helpers\DurationHelper;
 use App\Models\CaseAgenda;
 use App\Models\Commentaire;
+use App\Models\Gestionnaire;
 use App\Models\GroupLocal;
 use App\Models\LineTypeAccessoire;
 use App\Models\Periode;
-use App\Models\Gestionnaire;
 use App\Models\Reservation;
 use App\Models\TypeAccessoire;
 use App\Models\TypeJour;
 use App\Models\TypeSalle;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -28,14 +28,77 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $assets = ['chart', 'animation', 'calender'];
-        if ($request->ajax()) {
-            $data = Reservation::query()->whereDate('start', '>=', $request->start)
-                ->whereDate('end', '>=', $request->end)
-                ->where('status','=',Reservation::ACCEPTED)
-                ->get(['id', 'start', 'end', 'libelle']);
-            return response()->json($data);
+        if (!is_null($request->get('date'))){
+            $date_start=$request->get('date');
+        }else{
+            $date_start=date("Y-m-d");
         }
-        return view('index', compact('assets'));
+        $day = new \DateTime($date_start);
+        $month = $day->format('m');
+        $number = cal_days_in_month(CAL_GREGORIAN, $month, $day->format('y'));
+        $headers = [];
+        $bodys = [];
+        for ($i = 1; $i <= $number; $i++) {
+            $id_var = getdate(mktime(1, 1, 1, $month, $i, $day->format('y')));
+            $headers[] = [
+                'day' => DateTimeHelper::getDayByNumber($id_var['wday']),
+                'number' => $i,
+            ];
+        }
+        $groupes = GroupLocal::all();
+        $salles = TypeSalle::all();
+        foreach ($salles as $salle) {
+            $line_reservation = [];
+            for ($i = 1; $i <= $number; $i++) {
+                $date_array = getdate(mktime(1, 1, 1, $month, $i, $day->format('y')));
+                $date_jour_end = date('Y-m-d', mktime(23, 0, 0, $month, $i, $day->format('y')));
+                $date_jour = date('Y-m-d', mktime(0, 0, 0, $month, $i, $day->format('y')));
+                $reservations = Reservation::query()->where('local_id', '=', $salle->id)->where('date_reservation', '>=', $date_jour)
+                    ->where('date_reservation', '<', $date_jour . ' 23:00:00')->get();
+                $line_reservation[] = [
+                    'day' => $date_jour_end,
+                    'agenda' => $reservations,
+                ];
+            }
+            $bodys[] = [
+                'line' => $salle->type,
+                'line_id' => $salle->id,
+                'occupations' => $line_reservation
+            ];
+        }
+
+        return view('index', ["date_start"=>$date_start,"headers" => $headers, "bodys" => $bodys, "groupes" => $groupes, "salles" => $salles, compact('assets'), 'month' => $number]);
+    }
+
+    public function agenda_month(Request $request)
+    {
+        $assets = ['chart', 'animation', 'calender'];
+        $salle = $request->request->get('local', 1);
+        $groupes = GroupLocal::all();
+        $salles = TypeSalle::all();
+        $day = new \DateTime($request->request->get('date_start'));
+        $month = $day->format('m');
+        return view('agenda_month', [ "date_start"=>$request->request->get('date_start'),"groupes" => $groupes, "salle" => $salle,'assets'=>$assets, compact('assets'), 'month' => $month]);
+    }
+    public function agenda_week(Request $request)
+    {
+        $assets = ['chart', 'animation', 'calender'];
+        $salle = $request->request->get('local', 1);
+        $groupes = GroupLocal::all();
+        $salles = TypeSalle::all();
+        $day = new \DateTime($request->request->get('date_start'));
+        $month = $day->format('m');
+        return view('agenda_week', [ "date_start"=>$request->request->get('date_start'),"groupes" => $groupes, "salle" => $salle,'assets'=>$assets, compact('assets'), 'month' => $month]);
+    }
+    public function agenda_day(Request $request)
+    {
+        $assets = ['chart', 'animation', 'calender'];
+        $salle = $request->request->get('local', 1);
+        $groupes = GroupLocal::all();
+        $salles = TypeSalle::all();
+        $day = new \DateTime($request->request->get('date_start'));
+        $month = $day->format('m');
+        return view('agenda_day', [ "date_start"=>$request->request->get('date_start'),"groupes" => $groupes, "salle" => $salle,'assets'=>$assets, compact('assets'), 'month' => $month]);
     }
     /*
      * Dashboard Pages Routs
@@ -44,7 +107,7 @@ class HomeController extends Controller
     {
         $assets = ['chart', 'animation', 'calender'];
         if ($request->ajax()) {
-            $data = Reservation::query()->where('status','=',Reservation::ACCEPTED)
+            $data = Reservation::query()->where('status', '=', Reservation::ACCEPTED)
                 ->whereDate('start', '>=', $request->start)
                 ->whereDate('end', '>=', $request->end)
                 ->get(['id', 'start', 'end', 'libelle']);
@@ -56,7 +119,10 @@ class HomeController extends Controller
     public function calendarevent(Request $request)
     {
         $events = [];
-        $reservations = Reservation::query()->where('status','=',Reservation::ACCEPTED)->get();
+        $reservations = Reservation::query()
+            ->where('local_id', '=', $request->request->get('local'))
+            ->where('status', '=', Reservation::ACCEPTED)
+            ->get();
         foreach ($reservations as $reservation) {
             if ($reservation->status == "PENDING") {
                 $color = 'rgba(235,153,27,0.2)';
@@ -68,12 +134,12 @@ class HomeController extends Controller
                 $color = 'rgba(235,153,27,0.2)';
                 $text_color = 'rgba(235,153,27,1)';
             }
-            $dateime=new \DateTime($reservation->date_reservation);
+            $dateime = new \DateTime($reservation->date_reservation);
 
             $events[] = [
-                'title' => "R_ ".$reservation->local->libelle,
-                'start' => $dateime->format('Y-m-d').' '.$reservation->start,
-                'end' => $dateime->format('Y-m-d').' '.$reservation->end,
+                'title' => "R_ ".$request->request->get('local') . $reservation->local->libelle,
+                'start' => $dateime->format('Y-m-d') . ' ' . $reservation->start,
+                'end' => $dateime->format('Y-m-d') . ' ' . $reservation->end,
                 'textColor' => $text_color,
                 'backgroundColor' => $color,
                 'borderColor' => $text_color
@@ -93,14 +159,16 @@ class HomeController extends Controller
         $periodes = Periode::all();
         return view('my.addreservation', ["periodes" => $periodes, "typesalles" => $typesalles, "accessoires" => $accessoires, "typejours" => $typejours]);
     }
+
     public function addreservation_home(Request $request)
     {
         $accessoires = TypeAccessoire::all();
         $typesalles = TypeSalle::all();
         $typejours = TypeJour::all();
         $periodes = Periode::all();
-        return view('my.addreservation_home', ["date"=>$request->get('date'),"periodes" => $periodes, "typesalles" => $typesalles, "accessoires" => $accessoires, "typejours" => $typejours]);
+        return view('my.addreservation_home', ["date" => $request->get('date'), "periodes" => $periodes, "typesalles" => $typesalles, "accessoires" => $accessoires, "typejours" => $typejours]);
     }
+
     public function startreservation(Request $request)
     {
         $date = $request->get('date');
@@ -126,39 +194,46 @@ class HomeController extends Controller
                 'locals' => $locals,
                 'group_id' => $group->id,
             ]);
+        }elseif ($request->get('mode') == "getsalle"){
+            $group = GroupLocal::query()->find($request->get('groupe'))->getModel();
+            $locals = $group->locals;
+            return response()->json([
+                'locals' => $locals,
+            ]);
         } else {
-           /* $groups = GroupLocal::query()->where('type_salle_id', '=', $salle)
-                ->where('type_jour_id', '=', $jour)->get();*/
 
             return response()->json([
-                'begins'=>$this->getCrenneaux( $request->get('horaire_reservation')),
-                'ends'=>$this->getCrenneauxEnd( $request->get('horaire_reservation')),
+                'begins' => $this->getCrenneaux($request->get('horaire_reservation')),
+                'ends' => $this->getCrenneauxEnd($request->get('horaire_reservation')),
             ]);
         }
 
     }
 
-    public function getCrenneaux($crenau){
+    public function getCrenneaux($crenau)
+    {
 
-        if ($crenau=="08h25-15h45"){
+        if ($crenau == "08h25-15h45") {
             return [
-                '08:25',  '09:15', '10:05', '11:55',
+                '08:25', '09:15', '10:05', '11:55',
                 '12:45', '13:35', '14:25',
             ];
-        }else{
+        } else {
             return [
-                '16:00',  '17:00', '18:00', '19:00',
+                '16:00', '17:00', '18:00', '19:00',
                 '20:00', '21:00',
             ];
         }
     }
-    public function getCrenneauxEnd($crenau){
-        if ($crenau=="08h25-15h45"){
+
+    public function getCrenneauxEnd($crenau)
+    {
+        if ($crenau == "08h25-15h45") {
             return [
                 '09:15', '10:05', '11:55',
-                '12:45', '13:35', '14:25','15:15',
+                '12:45', '13:35', '14:25', '15:15',
             ];
-        }else{
+        } else {
             return [
                 '17:00', '18:00', '19:00',
                 '20:00', '21:00', '22:00',
@@ -166,6 +241,7 @@ class HomeController extends Controller
         }
 
     }
+
     public function ajaxpostreservation(Request $request)
     {
         $data = json_decode($request->getContent(), true);
@@ -225,25 +301,24 @@ class HomeController extends Controller
             'status' => Reservation::ACCEPTED,
             'gestionnaire_id' => $gestionnaire->id
         ]);
-        $int=DurationHelper::getCreanneauBetwennTimes($reservation->start,$reservation->end);
-       for ($i=1;$i<$int;$i++){
-            $begin=DurationHelper::addCrenneau($reservation->start,$i);
+        $int = DurationHelper::getCreanneauBetwennTimes($reservation->start, $reservation->end);
+        for ($i = 1; $i < $int; $i++) {
+            $begin = DurationHelper::addCrenneau($reservation->start, $i);
             $agenda = CaseAgenda::query()->where('date_jour', '=', $reservation->date_reservation)
                 ->where('type_jour_id', '=', $reservation->local_group->type_jour_id)
-                ->where('heure_debut', '=', $begin)->first()
-               ;
+                ->where('heure_debut', '=', $begin)->first();
 
             if (is_null($agenda)) {
                 $agenda = CaseAgenda::create([
                     "date_jour" => $reservation->date_reservation,
-                    "libelle_jour" => date('D',strtotime($reservation->date_reservation)),
+                    "libelle_jour" => date('D', strtotime($reservation->date_reservation)),
                     "heure_debut" => $begin,
                     "created_at" => new \DateTime('now'),
                     "type_jour_id" => $reservation->local_group->type_jour_id,
                 ]);
             }
             $reservation->agenda()->sync($agenda);
-         }
+        }
         return redirect()->route('listreservation')->withSuccess('Update successful!');
     }
 
@@ -311,6 +386,7 @@ class HomeController extends Controller
     {
         return view('auth.user-privacy-setting');
     }
+
     /*
         * Icons Page Routs
         */

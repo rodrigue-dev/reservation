@@ -8,6 +8,7 @@
 
     <title>{{env('APP_NAME')}} | Responsive Bootstrap 5 Admin Dashboard Template</title>
     @include('partials.dashboard._head')
+    <link rel="stylesheet" href="{{asset('css/guest.css')}}">
 </head>
 <body class data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0" >
     @include('partials.dashboard._body7')

@@ -35,6 +35,9 @@ Route::get('/storage', function () {
 
 //UI Pages Routs
 Route::get('/', [HomeController::class, 'index'])->name('index');
+Route::get('/month', [HomeController::class, 'agenda_month'])->name('agenda_month');
+Route::get('/week', [HomeController::class, 'agenda_week'])->name('agenda_week');
+Route::get('/day', [HomeController::class, 'agenda_day'])->name('agenda_day');
 Route::get('/calendarevent', [HomeController::class, 'calendarevent'])->name('calendarevent');
 
 //Icons Page Routs
@@ -51,7 +54,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('role', RoleController::class);
     // Dashboard Routes
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
-   Route::get('/myreservation', [HomeController::class, 'myreservation'])->name('myreservation');
+    Route::get('/myreservation', [HomeController::class, 'myreservation'])->name('myreservation');
     Route::get('/listreservation', [HomeController::class, 'listreservation'])->name('listreservation');
     Route::get('/waitreservation', [HomeController::class, 'waitreservation'])->name('waitreservation');
     Route::post('reservation/denier', [HomeController::class, 'annulerreservation'])->name('annulerreservation');

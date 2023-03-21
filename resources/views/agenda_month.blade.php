@@ -1,13 +1,70 @@
 @push('scripts')
     <script src="{{asset('js/guest/calendar.min.js')}}"></script>
     <script src="{{asset('js/guest/guest.js')}}"></script>
+    <script>
+        $('#salle_select').change(function () {
+
+            $("#calenda_month").html("")
+            $("#calenda_month").append("<div id=\"calendar_month\" class=\"calendar-s\"></div>");
+            let calendarEl = document.getElementById('calendar_month');
+
+            let calendar1 = new FullCalendar.Calendar(calendarEl, {
+                selectable: true,
+                plugins: ["timeGrid", "dayGrid", "list", "interaction"],
+                timeZone: "UTC",
+                defaultView: "dayGridMonth",
+                contentHeight: "auto",
+                eventLimit: true,
+                dayMaxEvents: 4,
+                header: {
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+                },
+                dateClick: function (info) {
+                    $('#schedule-start-date').val(info.dateStr)
+                    $('#schedule-end-date').val(info.dateStr)
+                    console.log(info.dateStr)
+                    window.location=configs.routes.startreservation+"?date="+info.dateStr;
+                },
+                events:configs.routes.calendarevent+"?local="+$(this).val()
+            });
+
+            calendar1.render();
+
+        })
+        $('#groupsalle').change(function () {
+            $.ajax({
+                url: configs.routes.reservation_getsalle,
+                data: {
+                    groupe: $(this).val(),
+                    periode: $('#periode').val(),
+                    typejour: $('#typejour').val(),
+                    horaire_reservation: $(this).val(),
+                    mode: 'getsalle'
+                },
+                type: "GET",
+                success: function (data) {
+                    $('#salle_select').html("")
+                    $('#salle_select').append("<option> Choisir une salle</option>");
+                    $.each(data.locals, function (index, item) {
+                        $('#salle_select').append("<option value="+item.id+">"+item.libelle+"</option>")
+
+                    })
+                },
+                error: function (error) {
+
+                }
+            })
+        })
+    </script>
 @endpush
 <x-app-layout layout="simple" :assets="$assets ?? []">
     <span class="uisheet screen-darken"></span>
+    <input type="hidden" id="salle_id" value="{{$salle}}">
     <input type="hidden" id="date_start" value="{{$date_start}}">
     <div class="header" style="background-size: cover; background-repeat: no-repeat; height: 20vh;position: relative;">
         <div class="main-img">
-
         </div>
         <div class="container">
             <nav class="nav navbar navbar-expand-lg navbar-light top-1 rounded">
@@ -86,13 +143,18 @@
                 <div class="col-md-3">
                     <label class="form-label">Salles</label>
                     <select class="form-select" id="salle_select">
+                   {{--     @foreach($salles as $salle)
+                            <option data-label="{{ $salle->libelle }}"
+                                    value="{{ $salle->id }}">{{ $salle->type }}
+                            </option>
+                        @endforeach--}}
                     </select>
                 </div>
                 <div class="col-md-4">
                     <div class="btn-group">
-                        <button class="btn btn-success" id="btn_day">Jour</button>
-                        <button class="btn btn-success" id="btn_week">Semaine</button>
-                        <button class="btn btn-success" id="btn_month">Mois</button>
+                        <a class="btn btn-success" id="btn_day" href="{{route('agenda_day',['local'=>$salle,'date_start'=>$date_start])}}">Jour</a>
+                        <a class="btn btn-success" id="btn_week" href="{{route('agenda_week',['local'=>$salle,'date_start'=>$date_start])}}">Semaine</a>
+                        <a class="btn btn-active" id="btn_month" href="{{route('agenda_month',['local'=>$salle,'date_start'=>$date_start])}}">Mois</a>
                     </div>
                 </div>
             </div>
@@ -100,43 +162,8 @@
                 <div class="col-lg-12">
                     <div class="card  ">
                         <div class="card-body">
-                            {{-- <div id="calendar1" class="calendar-s"></div>--}}
-                            <div id="calenda_day"></div>
-                            <div id="calenda_week"></div>
                             <div id="calenda_month">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                        <th>Salles</th>
-                                        @foreach($headers as $periode)
-
-                                            <th>{{ $periode['day'] }}
-                                                <span>{{ $periode['number'] }}</span>
-                                            </th>
-                                        @endforeach
-                                        </thead>
-                                        <tbody>
-                                        @foreach($bodys as $body)
-                                            <tr>
-                                                <td>
-                                                    <a href="{{route('agenda_month',['local'=>$body['line_id'],'date_start'=>$date_start])}}">{{$body['line']}}</a>
-                                                </td>
-                                                @foreach($body['occupations'] as $periode)
-
-                                                    <td>{{--<span>{{ $periode['day'] }}</span>--}}
-                                                        @foreach($periode['agenda'] as $agenda)
-                                                            <span
-                                                                class="btn btn-sm btn-outline-dark">{{ $agenda['libelle'] }}</span>
-                                                            <br>
-                                                        @endforeach
-                                                    </td>
-
-                                                @endforeach
-                                            </tr>
-                                        @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <div id="calendar_month" class="calendar-s"></div>
                             </div>
                         </div>
                     </div>
