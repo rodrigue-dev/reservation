@@ -5,7 +5,7 @@
                 <div class="col-lg-12">
                     <div class="card  ">
                         <div class="card-body">
-                            <div id="calendar1" class="calendar-s"></div>
+                        {{--    <div id="calendar1" class="calendar-s"></div>--}}
                         </div>
                     </div>
                 </div>

@@ -30,11 +30,13 @@
                     $('#locaux').html("")
                     $('#group_local').val(data.group_id)
                     $.each(data.locals, function (index, item) {
-                        $('#locaux').append(
+                       /* $('#locaux').append(
                             ' <div class="form-check col-md-4">\n' +
                             ' <input class="form-check-input" type="radio" name="local" value="' + item.id + '" id="local1">\n' +
                             ' <label class="form-check-label" for="local1">' + item.libelle + '</label></div>'
-                        );
+                        );*/
+                        $('#locaux').append("<option value=" + item.id + ">" +item.libelle+
+                            "</option>")
                     })
                 },
                 error: function (error) {
@@ -125,7 +127,7 @@
                 type: "POST",
                 dataType: "JSON",
                 data: JSON.stringify({
-                    ob: jsonObj, local: $('#locaux input[type=radio]:checked').val()
+                    ob: jsonObj, local: $('#locaux  option:selected').val()
                     , periode: $('#periode option:selected').val(),end: $('#r_time_end').val(),
                     date_reservation: $('#r_date').val(),start: $('#r_time').val(),
                     group_local: $('#group_local').val()
@@ -268,8 +270,9 @@
                         <div class="row px-3" id="step-2">
                             <h5>Locaux disponibles</h5>
                             <input id="group_local" type="hidden">
-                            <div id="locaux" class="row px-3 pt-3">
-
+                            <div id="locaux_" class="row px-3 pt-3">
+                                <select class="form-select" id="locaux">
+                                </select>
                             </div>
                             <h5 class="mt-3">Accessoires</h5>
                             <div class="mt-3 row">
