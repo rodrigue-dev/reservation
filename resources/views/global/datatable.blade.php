@@ -2,6 +2,7 @@
     {{ $dataTable->scripts() }}
     <script>
         function getId(id) {
+            //alert(id)
             $('#reservation_id').val(id)
         }
     </script>

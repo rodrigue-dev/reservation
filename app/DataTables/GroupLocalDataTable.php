@@ -31,7 +31,7 @@ class GroupLocalDataTable extends DataTable
      */
     public function query()
     {
-        $model = GroupLocal::query()->with('typejours')
+        $model = GroupLocal::query()
             ->with('typesalle');
         return $this->applyScopes($model);
     }
@@ -68,7 +68,7 @@ class GroupLocalDataTable extends DataTable
         return [
             Column::make('libelle'),
             Column::make('typesalle.type'),
-            Column::make('typejours.type'),
+            Column::make('type_jour_id'),
             Column::make('horaire_reservation'),
         ];
     }

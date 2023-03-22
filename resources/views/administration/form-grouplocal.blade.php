@@ -11,7 +11,10 @@
         </div>
         <div class="form-group col-md-6">
             <label class="form-label">Type de Jour</label>
-            {{ Form::select('type_jour', $jours,null, ['class' => 'form-select','id' => 'lastname', 'required']) }}
+            {{ Form::select('type_jour', ["1"=>"Jours scolaires",
+                                    "2"=>"Jours feriés",
+                                    "3"=>"Weekends",
+                                    "4"=>"Congés"],"Selectionnez un type de jour", ['class' => 'form-select','id' => 'lastname', 'required']) }}
         </div>
 
         <div class="form-group col-md-6">

@@ -43,8 +43,22 @@ class ReservationDataTable extends DataTable
             })
             ->editColumn('local_group.typejour', function ($query) {
                 $group = GroupLocal::query()->find($query->group_local_id);
-                $typejour = $group->typejours;
-                return $typejour->type;
+                switch ($group->type_jour_id){
+                    case 1:
+                        $typejour="Jours scolaire";
+                        break;
+                    case 2:
+                        $typejour="Jours feriés";
+                        break;
+                    case 3:
+                        $typejour="Weekends";
+                        break;
+                    case 4:
+                        $typejour="Congés";
+                        break;
+
+                }
+                return $typejour;
             })
             ->editColumn('local_group.typesalle', function ($query) {
                 $group = GroupLocal::query()->find($query->group_local_id);

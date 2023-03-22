@@ -123,12 +123,15 @@
                                                 </td>
                                                 @foreach($body['occupations'] as $periode)
 
-                                                    <td>{{--<span>{{ $periode['day'] }}</span>--}}
+                                                    <td onclick="window.location='{{route('addreservation_home',['date'=>$periode['date_jour']])}}'">
+                                                        <div  style="display: block;width: 100%;height: 100%">
+                                                            <a href="{{route('addreservation_home',['date'=>$periode['date_jour']])}}">
                                                         @foreach($periode['agenda'] as $agenda)
                                                             <span
-                                                                class="btn btn-sm btn-outline-dark">{{ $agenda['libelle'] }}</span>
+                                                                class="label  btn-sm btn-outline-dark">{{ $agenda['libelle'] }}</span>
                                                             <br>
                                                         @endforeach
+                                                        </a></div>
                                                     </td>
 
                                                 @endforeach

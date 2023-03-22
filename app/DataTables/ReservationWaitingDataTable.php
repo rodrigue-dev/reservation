@@ -44,8 +44,22 @@ class ReservationWaitingDataTable extends DataTable
         })
         ->editColumn('local_group.typejour', function ($query) {
             $group = GroupLocal::query()->find($query->group_local_id);
-            $typejour = $group->typejours;
-            return $typejour->type;
+            switch ($group->type_jour_id){
+                case 1:
+                    $typejour="Jours scolaire";
+                    break;
+                case 2:
+                    $typejour="Jours feriés";
+                    break;
+                case 3:
+                    $typejour="Weekends";
+                    break;
+                case 4:
+                    $typejour="Congés";
+                    break;
+
+            }
+            return $typejour;
         })
         ->editColumn('local_group.typesalle', function ($query) {
             $group = GroupLocal::query()->find($query->group_local_id);
@@ -59,7 +73,7 @@ class ReservationWaitingDataTable extends DataTable
         ->addColumn('action', function ($query){
             if ($query->status == 'PENDING'){
                 return '<div class="btn-group-sm"><a class="btn btn-sm btn-success" href="'.route('activatereservation',['id'=>$query->id]).'">Valider</a>
-                 <a class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#refused-reservation">Refuser</a></div>';
+                 <a class="btn btn-sm btn-danger" data-bs-toggle="modal" onclick=getId("'.$query->id.'") data-bs-target="#refused-reservation">Refuser</a></div>';
             }else{
                 return '';
             }

@@ -53,14 +53,16 @@ class HomeController extends Controller
                 $date_array = getdate(mktime(1, 1, 1, $month, $i, $day->format('y')));
                 $date_jour_end = date('Y-m-d', mktime(23, 0, 0, $month, $i, $day->format('y')));
                 $date_jour = date('Y-m-d', mktime(0, 0, 0, $month, $i, $day->format('y')));
-                $reservations = Reservation::query()->where('local_id', '=', $salle->id)->where('date_reservation', '>=', $date_jour)
+                $reservations = Reservation::query()->where('status','=',Reservation::ACCEPTED)->where('local_id', '=', $salle->id)->where('date_reservation', '>=', $date_jour)
                     ->where('date_reservation', '<', $date_jour . ' 23:00:00')->get();
                 $line_reservation[] = [
                     'day' => $date_jour_end,
+                    'date_jour' => $date_jour,
                     'agenda' => $reservations,
                 ];
             }
             $bodys[] = [
+
                 'line' => $salle->type,
                 'line_id' => $salle->id,
                 'occupations' => $line_reservation
@@ -187,8 +189,7 @@ class HomeController extends Controller
         if ($request->get('mode') == "getlocal") {
             $horaire = $request->get('horaire_reservation');
             $group = GroupLocal::query()->firstWhere('type_salle_id', '=', $salle)
-                ->where('type_jour_id', '=', $jour)
-                ->where('horaire_reservation', '=', $horaire)->getModel();
+                ->where('type_jour_id', '=', $jour)->getModel();
             $locals = $group->locals;
             return response()->json([
                 'locals' => $locals,
@@ -203,17 +204,31 @@ class HomeController extends Controller
         } else {
 
             return response()->json([
-                'begins' => $this->getCrenneaux($request->get('horaire_reservation')),
-                'ends' => $this->getCrenneauxEnd($request->get('horaire_reservation')),
+                'begins' => $this->getCrenneaux($request->get('horaire_reservation'),$request->get('typejour')),
+                'ends' => $this->getCrenneauxEnd($request->get('horaire_reservation'),$request->get('typejour')),
             ]);
         }
 
     }
 
-    public function getCrenneaux($crenau)
+    public function getCrenneaux($crenau,$typejour)
     {
+        if ($typejour==1){
+            return [
+                '08:25', '09:15', '10:05', '10:55',
+                '11:45', '12:35', '13:25','14:15','15:05',
+                '------------ Fin des cours en matinée ------------',
+                '16:30', '17:30', '18:30', '19:30', '20:30', '21:30',
+            ];
+        }else{
+            return [
+                '08:25', '09:25', '10:25', '11:25',
+                '12:25', '13:25', '14:25','15:25','16:25','17:25','18:25',
+                '19:25','20:25','21:25','22:25',
+            ];
+        }
 
-        if ($crenau == "08h25-15h45") {
+       /* if ($crenau == "08h25-15h45") {
             return [
                 '08:25', '09:15', '10:05', '11:55',
                 '12:45', '13:35', '14:25',
@@ -223,12 +238,26 @@ class HomeController extends Controller
                 '16:00', '17:00', '18:00', '19:00',
                 '20:00', '21:00',
             ];
-        }
+        }*/
     }
 
-    public function getCrenneauxEnd($crenau)
+    public function getCrenneauxEnd($crenau,$typejour)
     {
-        if ($crenau == "08h25-15h45") {
+        if ($typejour==1){
+            return [
+                 '09:15', '10:05', '10:55',
+                '11:45', '12:35', '13:25','14:15','15:05',
+                '------------ Fin des cours en matinée ------------',
+               '17:30', '18:30', '19:30', '20:30', '21:30','22:30',
+            ];
+        }else{
+            return [
+                 '09:25', '10:25', '11:25',
+                '12:25', '13:25', '14:25','15:25','16:25','17:25','18:25',
+                '19:25','20:25','21:25','22:25',
+            ];
+        }
+      /*  if ($crenau == "08h25-15h45") {
             return [
                 '09:15', '10:05', '11:55',
                 '12:45', '13:35', '14:25', '15:15',
@@ -238,7 +267,7 @@ class HomeController extends Controller
                 '17:00', '18:00', '19:00',
                 '20:00', '21:00', '22:00',
             ];
-        }
+        }*/
 
     }
 
